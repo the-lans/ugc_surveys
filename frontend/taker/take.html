@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Прохождение опроса — UGC Surveys</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+
+  <main class="main" style="max-width:640px">
+    <a href="surveys.html" class="btn btn-ghost btn-sm" style="margin-bottom:20px">
+      ← К списку опросов
+    </a>
+
+    <div id="error" class="alert alert-error hidden"></div>
+
+    <!-- Прогресс -->
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="progress-label">
+        <span id="progress-text">Вопрос 1</span>
+        <span id="progress-count"></span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Блок с вопросом -->
+    <div class="card" id="question-card">
+      <p id="question-text" style="font-size:18px; font-weight:600; margin-bottom:20px"></p>
+      <div id="answer-area"></div>
+      <hr class="divider">
+      <div id="answer-error" class="alert alert-error hidden"></div>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">
+        Ответить
+      </button>
+    </div>
+
+    <!-- Экран завершения -->
+    <div class="completion hidden" id="completion">
+      <div class="completion-icon">✅</div>
+      <h2>Опрос завершён!</h2>
+      <p>Спасибо за прохождение.</p>
+      <a class="btn btn-primary" href="surveys.html">К списку опросов</a>
+    </div>
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/taker/take.js"></script>
+</body>
+</html>

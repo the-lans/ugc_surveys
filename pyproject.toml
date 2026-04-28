@@ -1,0 +1,32 @@
+[tool.ruff]
+line-length = 99
+target-version = "py313"
+exclude = ["migrations", ".git", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = [
+    "B008",   # function calls in default arguments (Django's urls)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"config/settings/*.py" = ["F401", "F403", "F405"]
+
+[tool.ty]
+python-version = "3.13"
+exclude = ["**/migrations/**", "tests/**"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+omit = [
+    "*/management/commands/*",
+    "*/migrations/*",
+    "manage.py",
+]

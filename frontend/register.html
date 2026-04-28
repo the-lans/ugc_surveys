@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация — UGC Surveys</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1 class="auth-title">Регистрация</h1>
+      <p class="auth-subtitle">UGC Surveys</p>
+
+      <div id="error" class="alert alert-error hidden"></div>
+
+      <form id="reg-form">
+        <div class="form-group">
+          <label class="form-label" for="username">Логин</label>
+          <input class="form-input" id="username" type="text" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Пароль (минимум 8 символов)</label>
+          <input class="form-input" id="password" type="password" minlength="8"
+                 autocomplete="new-password" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Роль</label>
+          <div class="type-group">
+            <input class="type-option" type="radio" name="role" id="role-taker"
+                   value="taker" checked>
+            <label class="type-label" for="role-taker">Участник опросов</label>
+
+            <input class="type-option" type="radio" name="role" id="role-creator"
+                   value="creator">
+            <label class="type-label" for="role-creator">Создатель опросов</label>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="submit-btn" type="submit">
+          Зарегистрироваться
+        </button>
+      </form>
+
+      <p class="auth-link">Уже есть аккаунт? <a href="login.html">Войти</a></p>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const form  = document.getElementById('reg-form');
+    const errEl = document.getElementById('error');
+    const btn   = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      hideError(errEl);
+      setLoading(btn, true, 'Зарегистрироваться');
+
+      const role = document.querySelector('input[name="role"]:checked').value;
+
+      try {
+        const data = await api.post('/api/auth/register/', {
+          username: document.getElementById('username').value.trim(),
+          password: document.getElementById('password').value,
+          role,
+        });
+
+        saveAuth({
+          access:   data.access,
+          refresh:  data.refresh,
+          username: data.username,
+          role:     data.role,
+        });
+
+        window.location.href =
+          data.role === 'creator' ? '/creator/surveys.html' : '/taker/surveys.html';
+
+      } catch (err) {
+        errEl.textContent = extractError(err);
+        errEl.classList.remove('hidden');
+        setLoading(btn, false, 'Зарегистрироваться');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мои опросы — UGC Surveys</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+
+  <main class="main">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px">
+      <h1 class="page-title" style="margin:0">Мои опросы</h1>
+    </div>
+
+    <!-- Форма создания нового опроса -->
+    <div class="card mb-20">
+      <div id="create-error" class="alert alert-error hidden"></div>
+      <form id="create-form" class="form-row">
+        <div class="form-group" style="margin:0; flex:1">
+          <input class="form-input" id="new-title" type="text"
+                 placeholder="Название нового опроса" required maxlength="255">
+        </div>
+        <button class="btn btn-primary" id="create-btn" type="submit">
+          + Создать опрос
+        </button>
+      </form>
+    </div>
+
+    <div id="error" class="alert alert-error hidden"></div>
+    <div id="surveys-list"></div>
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/creator/surveys.js"></script>
+</body>
+</html>
