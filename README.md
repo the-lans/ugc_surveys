@@ -12,9 +12,11 @@ REST API системы опросов. Два типа пользователе
 
 ## Локальный запуск
 
+**Терминал 1 — бэкенд:**
+
 ```bash
 git clone git@github.com:the-lans/ugc_surveys.git
-cd ./src
+cd ugc_surveys/src
 
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
@@ -24,18 +26,18 @@ python manage.py seed_dev_data --settings=config.settings.dev
 python manage.py runserver --settings=config.settings.dev
 ```
 
-Сервер на `http://localhost:8000`. Тестовые пользователи: `creator / testpass123`, `taker / testpass123`.
+Бэкенд на `http://localhost:8000`. Тестовые пользователи: `creator / testpass123`, `taker / testpass123`.
 
-## Запуск фронтенда
+**Терминал 2 — фронтенд:**
 
 Фронтенд — статические файлы (HTML + CSS + Vanilla JS), отдельного сборщика нет.
 
 ```bash
-cd ./src/frontend
+cd ugc_surveys/src/frontend
 python -m http.server 3000
 ```
 
-Открыть `http://localhost:3000/login.html`. Запросы к `/api/` автоматически уходят на `http://localhost:8000` (Django должен быть запущен).
+Открыть `http://localhost:3000/login.html`. Запросы к `/api/` автоматически уходят на `http://localhost:8000`.
 
 На проде фронтенд раздаётся nginx из директории `frontend/` — отдельный запуск не нужен.
 
@@ -48,22 +50,33 @@ pre-commit run --all-files
 
 ## Деплой на прод
 
+**Требования:** Docker и Docker Compose (v2+). Установить на Ubuntu/Debian:
+
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+```
+
 Один раз на сервере:
 
 ```bash
 ssh user@your-server
 git clone git@github.com:the-lans/ugc_surveys.git ~/projects/ugc_surveys
 cd ~/projects/ugc_surveys/src
-cp .env.example .env  
+cp .env.example .env
+nano .env   
 # заполнить DJANGO_SECRET_KEY, DB_PASSWORD, DJANGO_ALLOWED_HOSTS
-docker-compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml exec web python manage.py migrate
 ```
+
+Открыть `http://your-server-ip/login.html`.
 
 Обновление после изменений:
 
 ```bash
 git pull
-docker-compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 ## Переменные окружения
