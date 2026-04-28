@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>UGC Surveys</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const role = getRole();
+    if (!localStorage.getItem('access_token')) {
+      window.location.href = '/login.html';
+    } else if (role === 'creator') {
+      window.location.href = '/creator/surveys.html';
+    } else {
+      window.location.href = '/taker/surveys.html';
+    }
+  </script>
+</body>
+</html>

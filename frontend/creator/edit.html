@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Редактирование опроса — UGC Surveys</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+
+  <main class="main">
+    <a href="surveys.html" class="btn btn-ghost btn-sm" style="margin-bottom:16px">
+      ← Назад к списку
+    </a>
+
+    <div id="locked-banner" class="alert alert-warning hidden">
+      По опросу уже есть ответы — редактирование заблокировано.
+    </div>
+    <div id="error" class="alert alert-error hidden"></div>
+
+    <!-- Заголовок опроса -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label" for="survey-title">Название опроса</label>
+        <input class="form-input" id="survey-title" type="text"
+               placeholder="Введите название" maxlength="255">
+        <div id="title-status" class="text-muted" style="font-size:12px; margin-top:4px"></div>
+      </div>
+    </div>
+
+    <!-- Список вопросов -->
+    <h2 style="font-size:16px; font-weight:600; margin-bottom:12px">Вопросы</h2>
+    <div id="questions-list"></div>
+
+    <!-- Форма добавления вопроса -->
+    <div class="card" id="add-question-card">
+      <h3 style="font-size:15px; font-weight:600; margin-bottom:16px">Добавить вопрос</h3>
+      <div id="add-error" class="alert alert-error hidden"></div>
+      <form id="add-question-form">
+        <div class="form-group">
+          <label class="form-label" for="q-text">Текст вопроса</label>
+          <input class="form-input" id="q-text" type="text" required maxlength="1000">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Тип</label>
+          <div class="type-group">
+            <input class="type-option" type="radio" name="qtype" id="type-single" value="single" checked>
+            <label class="type-label" for="type-single">Один вариант</label>
+
+            <input class="type-option" type="radio" name="qtype" id="type-multiple" value="multiple">
+            <label class="type-label" for="type-multiple">Несколько вариантов</label>
+
+            <input class="type-option" type="radio" name="qtype" id="type-text" value="text">
+            <label class="type-label" for="type-text">Свободный текст</label>
+          </div>
+        </div>
+
+        <div id="options-section">
+          <label class="form-label">Варианты ответа</label>
+          <div id="options-list"></div>
+          <button type="button" class="btn btn-ghost btn-sm mt-12" id="add-option-btn">
+            + Добавить вариант
+          </button>
+        </div>
+
+        <hr class="divider">
+        <button type="submit" class="btn btn-primary" id="add-q-btn">Добавить вопрос</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/creator/edit.js"></script>
+</body>
+</html>

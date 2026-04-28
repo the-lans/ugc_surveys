@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход — UGC Surveys</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1 class="auth-title">Вход</h1>
+      <p class="auth-subtitle">UGC Surveys</p>
+
+      <div id="error" class="alert alert-error hidden"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="username">Логин</label>
+          <input class="form-input" id="username" type="text" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Пароль</label>
+          <input class="form-input" id="password" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn btn-primary" id="submit-btn" type="submit">
+          Войти
+        </button>
+      </form>
+
+      <p class="auth-link">Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    if (localStorage.getItem('access_token')) {
+      window.location.href =
+        getRole() === 'creator' ? '/creator/surveys.html' : '/taker/surveys.html';
+    }
+
+    const form  = document.getElementById('login-form');
+    const errEl = document.getElementById('error');
+    const btn   = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      hideError(errEl);
+      setLoading(btn, true, 'Войти');
+
+      try {
+        const tokens = await api.post('/api/auth/token/', {
+          username: document.getElementById('username').value.trim(),
+          password: document.getElementById('password').value,
+        });
+
+        // Временно сохраняем токен для запроса профиля
+        localStorage.setItem('access_token',  tokens.access);
+        localStorage.setItem('refresh_token', tokens.refresh);
+
+        const me = await api.get('/api/auth/me/');
+        saveAuth({
+          access:   tokens.access,
+          refresh:  tokens.refresh,
+          username: me.username,
+          role:     me.role,
+        });
+
+        window.location.href =
+          me.role === 'creator' ? '/creator/surveys.html' : '/taker/surveys.html';
+
+      } catch (err) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        errEl.textContent = extractError(err) || 'Неверный логин или пароль';
+        errEl.classList.remove('hidden');
+        setLoading(btn, false, 'Войти');
+      }
+    });
+  </script>
+</body>
+</html>
