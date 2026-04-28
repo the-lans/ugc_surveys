@@ -28,6 +28,12 @@ python manage.py runserver --settings=config.settings.dev
 
 Бэкенд на `http://localhost:8000`. Тестовые пользователи: `creator / testpass123`, `taker / testpass123`.
 
+**Админка** — `http://localhost:8000/admin/`. Создать суперпользователя:
+
+```bash
+python manage.py createsuperuser --settings=config.settings.dev
+```
+
 **Терминал 2 — фронтенд:**
 
 Фронтенд — статические файлы (HTML + CSS + Vanilla JS), отдельного сборщика нет.

@@ -7,26 +7,43 @@ const createForm  = document.getElementById('create-form');
 const createErrEl = document.getElementById('create-error');
 const createBtn   = document.getElementById('create-btn');
 
-async function loadSurveys() {
-  listEl.innerHTML = '<p class="text-muted">Загрузка…</p>';
+let nextUrl = null;
+
+async function loadSurveys(url = '/api/surveys/') {
+  const isInitial = url === '/api/surveys/';
+  if (isInitial) {
+    listEl.innerHTML = '<p class="text-muted">Загрузка…</p>';
+    nextUrl = null;
+  }
   try {
-    const data = await api.get('/api/surveys/');
-    renderList(data.results || []);
+    const data = await api.get(url);
+    hideError(errEl);
+    nextUrl = data.next || null;
+    appendList(data.results || []);
   } catch (err) {
     errEl.textContent = extractError(err);
     errEl.classList.remove('hidden');
-    listEl.innerHTML = '';
+    if (isInitial) listEl.innerHTML = '';
+  } finally {
+    syncLoadMoreBtn();
   }
 }
 
-function renderList(surveys) {
-  if (!surveys.length) {
+function appendList(surveys) {
+  const isEmpty = !listEl.querySelector('.card') && !surveys.length;
+  if (isEmpty) {
     listEl.innerHTML = '<p class="empty-state">Опросов пока нет. Создайте первый!</p>';
     return;
   }
 
-  listEl.innerHTML = surveys.map(s => `
-    <div class="card" id="survey-${s.id}">
+  const placeholder = listEl.querySelector('p.text-muted,p.empty-state');
+  if (placeholder) placeholder.remove();
+
+  surveys.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.id = `survey-${s.id}`;
+    div.innerHTML = `
       <div class="card-header">
         <div>
           <div class="card-title">${escHtml(s.title)}</div>
@@ -42,8 +59,31 @@ function renderList(surveys) {
           <button class="btn btn-danger btn-sm" onclick="deleteSurvey(${s.id})">Удалить</button>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+    listEl.appendChild(div);
+  });
+
+}
+
+function syncLoadMoreBtn() {
+  let btn = document.getElementById('load-more-btn');
+  if (nextUrl) {
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'load-more-btn';
+      btn.className = 'btn btn-outline';
+      btn.style.cssText = 'display:block; margin:16px auto 0';
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        await loadSurveys(nextUrl);
+      });
+      listEl.after(btn);
+    }
+    btn.disabled = false;
+    btn.textContent = 'Загрузить ещё';
+  } else {
+    btn?.remove();
+  }
 }
 
 async function deleteSurvey(id) {
@@ -51,7 +91,7 @@ async function deleteSurvey(id) {
   try {
     await api.delete(`/api/surveys/${id}/`);
     document.getElementById(`survey-${id}`)?.remove();
-    if (!listEl.children.length) {
+    if (!listEl.querySelector('.card')) {
       listEl.innerHTML = '<p class="empty-state">Опросов пока нет. Создайте первый!</p>';
     }
   } catch (err) {
