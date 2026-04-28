@@ -11,7 +11,8 @@ async function _fetch(method, path, body, isRetry) {
   const opts = { method, headers };
   if (body !== null && body !== undefined) opts.body = JSON.stringify(body);
 
-  const res = await fetch(BASE_URL + path, opts);
+  const url = path.startsWith('http') ? path : BASE_URL + path;
+  const res = await fetch(url, opts);
 
   // Токен истёк — пробуем обновить один раз
   if (res.status === 401 && !isRetry) {
